@@ -15,7 +15,7 @@ rm -fr /var/cache/yum/*
 /usr/bin/systemctl enable puppetserver
 
 # Do initial Puppet Run
-  /opt/puppetlabs/puppet/bin/puppet agent -t
+/opt/puppetlabs/puppet/bin/puppet agent -t
 
 # Install Git
 /usr/bin/yum -y install git
@@ -65,8 +65,7 @@ EOF
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-git
 /opt/puppetlabs/puppet/bin/puppet module install -f gentoo-portage
 
-
-# Now Apply Subsystem Configurations
+# Now Apply Subsystem Configuration
 /opt/puppetlabs/puppet/bin/puppet apply /var/tmp/configure_r10k.pp
 
 # Install and Configure autosign.conf for agents
