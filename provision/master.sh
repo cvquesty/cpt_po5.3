@@ -56,6 +56,7 @@ EOF
 
 # Install Puppet-r10k to configure r10k and all Dependencies
 /opt/puppetlabs/puppet/bin/puppet module install -f puppet-r10k
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-concat
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-stdlib
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-ruby
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-gcc
