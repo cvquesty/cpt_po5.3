@@ -54,9 +54,17 @@ class { 'r10k':
 }
 EOF
 
-# Install Puppet-r10k to configure r10k
+# Install Puppet-r10k to configure r10k and all Dependencies
 /opt/puppetlabs/puppet/bin/puppet module install -f puppet-r10k
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-stdlib
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-ruby
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-gcc
+/opt/puppetlabs/puppet/bin/puppet module install -f puppet-make
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-inifile
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-vcsrepo
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-git
+/opt/puppetlabs/puppet/bin/puppet module install -f gentoo-portage
+
 
 # Now Apply Subsystem Configurations
 /opt/puppetlabs/puppet/bin/puppet apply /var/tmp/configure_r10k.pp
