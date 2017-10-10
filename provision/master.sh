@@ -14,6 +14,9 @@ rm -fr /var/cache/yum/*
 /usr/bin/systemctl start puppetserver
 /usr/bin/systemctl enable puppetserver
 
+# Do initial Puppet Run
+  /opt/puppetlabs/puppet/bin/puppet agent -t
+
 # Install Git
 /usr/bin/yum -y install git
 
@@ -36,11 +39,6 @@ ini_setting { 'Master Agent Certname':
 }
 EOF
 
-# Install and Configure PuppetDB
-/opt/puppetlabs/puppet/bin/puppet module install puppetlabs-puppetdb
-/opt/puppetlabs/puppet/bin/puppet apply -e "include puppetdb" --http_connect_timeout=5m || true
-/opt/puppetlabs/puppet/bin/puppet apply -e "include puppetdb::master::config" --http_connect_timeout=5m || true
-
 # Place the r10k configuration file
 cat > /var/tmp/configure_r10k.pp << 'EOF'
 class { 'r10k':
@@ -56,58 +54,17 @@ class { 'r10k':
 }
 EOF
 
-# Place the directory environments config file
-cat > /var/tmp/configure_directory_environments.pp << 'EOF'
-#####                            #####
-## Configure Directory Environments ##
-#####                            #####
-
-# Default for ini_setting resources:
-Ini_setting {
-  ensure => 'present',
-  path   => "${::settings::confdir}/puppet.conf",
-}
-
-ini_setting { 'Configure Environmentpath':
-  section => 'main',
-  setting => 'environmentpath',
-  value   => '$codedir/environments',
-}
-
-ini_setting { 'Configure Basemoudlepath':
-  section => 'main',
-  setting => 'basemodulepath',
-  value   => '$confdir/modules:/opt/puppetlabs/puppet/modules',
-}
-
-ini_setting { 'Master Agent Server':
-  section => 'agent',
-  setting => 'server',
-  value   => 'master.puppet.vm',
-}
-
-ini_setting { 'Master Agent Certname':
-  section => 'agent',
-  setting => 'certname',
-  value   => 'master.puppet.vm',
-}
-EOF
-
-# Install Zack-r10k to configure r10k
-/opt/puppetlabs/puppet/bin/puppet module install puppet-r10k
+# Install Puppet-r10k to configure r10k
+/opt/puppetlabs/puppet/bin/puppet module install -f puppet-r10k
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-stdlib
 
 # Now Apply Subsystem Configurations
 /opt/puppetlabs/puppet/bin/puppet apply /var/tmp/configure_r10k.pp
-/opt/puppetlabs/puppet/bin/puppet apply /var/tmp/configure_directory_environments.pp
 
 # Install and Configure autosign.conf for agents
 cat > /etc/puppetlabs/puppet/autosign.conf << 'EOF'
 *.puppet.vm
 EOF
-
-# Turn off and disable the Firewall
-/usr/bin/systemctl disable iptables.service
-/usr/bin/systemctl stop iptables.service
 
 # Initial r10k Deploy
 /usr/bin/r10k deploy environment -pv
