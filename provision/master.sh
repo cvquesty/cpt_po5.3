@@ -14,9 +14,6 @@ rm -fr /var/cache/yum/*
 /usr/bin/systemctl start puppetserver
 /usr/bin/systemctl enable puppetserver
 
-# Do initial Puppet Run
-/opt/puppetlabs/puppet/bin/puppet agent -t
-
 # Install Git
 /usr/bin/yum -y install git
 
@@ -39,6 +36,12 @@ ini_setting { 'Master Agent Certname':
 }
 EOF
 
+# Bounce the network to trade out the Virtualbox IP
+/usr/bin/systemctl restart network
+
+# Do initial Puppet Run
+/opt/puppetlabs/puppet/bin/puppet agent -t
+
 # Place the r10k configuration file
 cat > /var/tmp/configure_r10k.pp << 'EOF'
 class { 'r10k':
@@ -56,6 +59,7 @@ EOF
 
 # Install Puppet-r10k to configure r10k and all Dependencies
 /opt/puppetlabs/puppet/bin/puppet module install -f puppet-r10k
+/opt/puppetlabs/puppet/bin/puppet module install -f puppet-make
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-concat
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-stdlib
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-ruby
@@ -63,6 +67,7 @@ EOF
 /opt/puppetlabs/puppet/bin/puppet module install -f puppet-make
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-inifile
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-vcsrepo
+/opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-pe_gem
 /opt/puppetlabs/puppet/bin/puppet module install -f puppetlabs-git
 /opt/puppetlabs/puppet/bin/puppet module install -f gentoo-portage
 
@@ -76,9 +81,3 @@ EOF
 
 # Initial r10k Deploy
 /usr/bin/r10k deploy environment -pv
-
-# Bounce the network to trade out the Virtualbox IP
-/usr/bin/systemctl restart network
-
-# Do initial Puppet Run
-  /opt/puppetlabs/puppet/bin/puppet agent -t
