@@ -19,28 +19,21 @@ rm -fr /var/cache/yum/*
 
 # Configure the Puppet Master
 cat > /var/tmp/configure_puppet_master.pp << EOF
-  #####                            #####
-  ## Configure Directory Environments ##
-  #####                            #####
+  #####                   #####
+  ## Configure Puppet Master ##
+  #####                   #####
 
-ini_setting { 'Master Agent Server':
-  section => 'agent',
-  setting => 'server',
-  value   => 'master.puppet.vm',
-}
-
-ini_setting { 'Master Agent Certname':
-  section  => 'agent',
-  setting  => 'certname',
-  value    => 'master.puppet.vm',
-}
+cat >>/etc/puppetlabs/puppet/puppet.conf << EOF
+[agent]
+server=master.puppet.vm
+certname=master.puppet.vm
 EOF
 
 # Bounce the network to trade out the Virtualbox IP
 /usr/bin/systemctl restart network
 
 # Do initial Puppet Run
-/opt/puppetlabs/puppet/bin/puppet agent -t
+/opt/puppetlabs/puppet/bin/puppet agent -t --server=master.puppet.vm
 
 # Place the r10k configuration file
 cat > /var/tmp/configure_r10k.pp << 'EOF'
