@@ -100,10 +100,6 @@ EOF
 /opt/puppetlabs/puppet/bin/puppet apply /var/tmp/configure_r10k.pp
 /opt/puppetlabs/puppet/bin/puppet apply /var/tmp/configure_directory_environments.pp
 
-# Configure Hiera
-/opt/puppetlabs/puppet/bin/puppet module install puppet-hiera
-/opt/puppetlabs/puppet/bin/puppet apply -e "class { 'hiera': hiera_yaml => '/etc/puppetlabs/puppet/hiera.yaml', hierarchy => [ 'nodes/%{::clientcert}','environments/%{::environment}','common'], logger => 'console', datadir => '/etc/puppetlabs/code/environments/%{environment}/hieradata',}" || true
-
 # Install and Configure autosign.conf for agents
 cat > /etc/puppetlabs/puppet/autosign.conf << 'EOF'
 *.puppet.vm
