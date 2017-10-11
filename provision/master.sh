@@ -32,6 +32,10 @@ EOF
 # Bounce the network to trade out the Virtualbox IP
 /usr/bin/systemctl restart network
 
+# Turn off the Firewall for this infrastructure
+/usr/bin/systemctl stop firewalld
+/usr/bin/systemctl disable firewalld
+
 # Do initial Puppet Run
 /opt/puppetlabs/puppet/bin/puppet agent -t --server=master.puppet.vm
 

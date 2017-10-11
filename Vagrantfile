@@ -65,7 +65,7 @@ end
   # Define the Production VM Characteristics
   config.vm.define 'production' do |production|
     production.vm.box = 'puppetlabs/centos-7.2-64-nocm'
-    production.vm.network :private_network, :ip => '10.10.100.111'
+    production.vm.network :private_network, :ip => '10.10.100.112'
     production.vm.hostname = 'production.puppet.vm'
 
   # Configure Development VM Settings
